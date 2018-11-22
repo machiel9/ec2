@@ -1,0 +1,75 @@
+
+<html>
+    <head>
+        
+    </head>
+    
+    <body>
+        <form>
+        <h1>IHWS CONTROL PAGE</h1>
+		<h1>-----------------------------------</h1>
+		
+		<h1>Status:</h1>
+        <div id="entries">            
+        </div>
+		<h1>Change status:</h1>
+        
+            <label for="msg">Status</label>
+            <textarea id="msg"></textarea>
+        
+            <button id='submitButton'>Submit</button>
+		<h1>Temperature:</h1>
+        <div id="temperature">            
+        </div>
+		<h1>Current:</h1>
+        <div id="current">            
+        </div>
+        </form>
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		
+		<script type="text/javascript">
+        
+            var API_URL = 'https://l1pw0hq5v0.execute-api.eu-west-2.amazonaws.com/prod/entries';
+        
+            $(document).ready(function(){
+                $.ajax({
+                    type: 'GET',
+                    url: API_URL,
+                    
+                    success: function(data){
+                        $('entries').html('');
+						$('temperature').html('');
+						$('current').html('');
+                        
+                        data.Items.forEach(function(ihwsItem){
+                            $('#entries').append(ihwsItem.status);
+							$('#temperature').append(ihwsItem.temp + ' degrees C');
+							$('#current').append(ihwsItem.current + ' A');
+                        })
+                    }
+                });
+            });
+            
+			
+			
+            $('#submitButton').on('click', function(){
+				$.ajax({
+                    type: 'POST',
+                    url: API_URL,
+					data: JSON.stringify({"status": $('#msg').val()}),
+					contentType: "application/json",
+                    
+                    success: function(data){
+                        location.reload();
+                    }
+                });
+				
+				return false;
+			});
+        </script>
+		        
+    </body>
+    
+
+</html>
